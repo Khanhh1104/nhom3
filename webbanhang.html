@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gundam Store - Frontend Only</title>
+<style>
+body{margin:0;font-family:Segoe UI;background:#f1f5f9}
+header{background:#0f172a;color:white;padding:15px 40px;display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0}
+nav button{margin-left:10px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer}
+.container{max-width:1200px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.card{background:white;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.1);overflow:hidden}
+.card img{width:100%;height:220px;object-fit:cover}
+.card-content{padding:15px}
+.price{color:#2563eb;font-weight:bold}
+button{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+button:hover{opacity:.85}
+input,select{padding:6px;margin-right:10px}
+.hidden{display:none}
+.pagination button{margin:5px}
+.admin{background:white;padding:20px;border-radius:10px;margin-top:20px}
+</style>
+</head>
+<body>
+
+<header>
+<h2><a href="#" style="color: white; text-decoration: none;">Gundam Store</a></h2>
+<nav>
+<button onclick="showLogin()">Admin</button>
+</nav>
+</header>
+
+<div class="container">
+
+<div>
+<input type="text" id="search" placeholder="Tìm kiếm..." oninput="render()">
+<select id="category" onchange="render()">
+<option value="all">Tất cả</option>
+<option value="HG">HG</option>
+<option value="MG">MG</option>
+<option value="RG">RG</option>
+<option value="PG">PG</option>
+</select>
+</div>
+
+<div id="product-list" class="grid"></div>
+<div class="pagination" id="pagination"></div>
+
+<div id="detail"></div>
+
+<div id="admin-panel" class="admin hidden">
+<h3>Quản lý sản phẩm</h3>
+<input type="hidden" id="editIndex">
+<input id="name" placeholder="Tên Gundam"><br><br>
+<select id="cat">
+<option>HG</option><option>MG</option><option>RG</option><option>PG</option>
+</select><br><br>
+<input id="price" type="number" placeholder="Giá"><br><br>
+<input id="image" placeholder="Link ảnh"><br><br>
+<textarea id="desc" placeholder="Mô tả"></textarea><br><br>
+<button onclick="saveProduct()">Lưu</button>
+<hr>
+<div id="admin-list"></div>
+</div>
+
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem('products')) || [
+{id:1,name:'RX-78-2 Gundam',category:'HG',price:350000,image:'https://i.imgur.com/Z6XK6FQ.jpg',desc:'Mobile Suit Gundam'},
+{id:2,name:'Freedom Gundam',category:'MG',price:950000,image:'https://i.imgur.com/Jm8X3Qp.jpg',desc:'Gundam SEED'},
+{id:3,name:'Unicorn Gundam',category:'RG',price:850000,image:'https://i.imgur.com/1n5Z8bF.jpg',desc:'Gundam Unicorn'},
+{id:4,name:'Strike Freedom',category:'PG',price:4200000,image:'https://i.imgur.com/8Km9tLL.jpg',desc:'Perfect Grade'},
+{id:5,name:'Gundam Barbatos Lupus',category:'HG',price:450000,image:'https://via.placeholder.com/300x220?text=Barbatos',desc:'Iron-Blooded Orphans'},
+{id:6,name:'Sazabi Ver.Ka',category:'MG',price:2300000,image:'https://via.placeholder.com/300x220?text=Sazabi',desc:'Char\'s Counterattack'},
+{id:7,name:'Nu Gundam',category:'RG',price:1100000,image:'https://via.placeholder.com/300x220?text=Nu+Gundam',desc:'Amuro Ray Mobile Suit'},
+{id:8,name:'Wing Gundam Zero EW',category:'PG',price:6000000,image:'https://via.placeholder.com/300x220?text=Wing+Zero',desc:'Endless Waltz'},
+{id:9,name:'Gundam Aerial',category:'HG',price:380000,image:'https://via.placeholder.com/300x220?text=Aerial',desc:'The Witch from Mercury'},
+{id:10,name:'Gundam Exia',category:'RG',price:650000,image:'https://via.placeholder.com/300x220?text=Exia',desc:'Mobile Suit Gundam 00'},
+{id:11,name:'Zaku II Char Custom',category:'HG',price:400000,image:'https://via.placeholder.com/300x220?text=Zaku+II',desc:'The Red Comet'},
+{id:12,name:'Unicorn Banshee Norn',category:'MG',price:1200000,image:'https://via.placeholder.com/300x220?text=Banshee',desc:'Gundam Unicorn'},
+{id:13,name:'God Gundam',category:'RG',price:800000,image:'https://via.placeholder.com/300x220?text=God+Gundam',desc:'G Gundam'},
+{id:14,name:'Tallgeese EW',category:'MG',price:1100000,image:'https://via.placeholder.com/300x220?text=Tallgeese',desc:'Endless Waltz'},
+{id:15,name:'Zeta Gundam Ver.Ka',category:'MG',price:1600000,image:'https://via.placeholder.com/300x220?text=Zeta',desc:'Zeta Gundam'},
+{id:16,name:'Gundam Calibarn',category:'HG',price:550000,image:'https://via.placeholder.com/300x220?text=Calibarn',desc:'The Witch from Mercury'},
+{id:17,name:'RX-93ff Nu Gundam',category:'RG',price:1400000,image:'https://via.placeholder.com/300x220?text=Nu+Gundam+ff',desc:'Fukuoka Statue Ver'},
+{id:18,name:'Sinanju Stein',category:'MG',price:1800000,image:'https://via.placeholder.com/300x220?text=Sinanju',desc:'Gundam Narrative'},
+{id:19,name:'Perfect Strike Gundam',category:'PG',price:5500000,image:'https://via.placeholder.com/300x220?text=Perfect+Strike',desc:'Gundam SEED'}
+];
+
+let currentPage=1;
+const perPage=8;
+
+function render(){
+if(location.hash.startsWith('#product-')) return showDetail();
+
+const search=document.getElementById('search').value.toLowerCase();
+const category=document.getElementById('category').value;
+let filtered=products.filter(p=>p.name.toLowerCase().includes(search));
+if(category!=='all') filtered=filtered.filter(p=>p.category===category);
+
+const totalPages=Math.ceil(filtered.length/perPage);
+if(currentPage>totalPages) currentPage=1;
+const start=(currentPage-1)*perPage;
+const pageItems=filtered.slice(start,start+perPage);
+
+const container=document.getElementById('product-list');
+container.innerHTML='';
+pageItems.forEach(p=>{
+container.innerHTML+=`
+<div class="card">
+<img src="${p.image}">
+<div class="card-content">
+<h3><a href="#product-${p.id}">${p.name}</a></h3>
+<p>${p.category}</p>
+<p class="price">${p.price.toLocaleString()} VND</p>
+</div></div>`;
+});
+
+let pag='';
+for(let i=1;i<=totalPages;i++){
+pag+=`<button onclick="currentPage=${i};render()">${i}</button>`;
+}
+document.getElementById('pagination').innerHTML=pag;
+}
+
+function showDetail(){
+const id=parseInt(location.hash.replace('#product-',''));
+const p=products.find(x=>x.id===id);
+if(!p) return;
+document.getElementById('product-list').innerHTML='';
+document.getElementById('pagination').innerHTML='';
+document.getElementById('detail').innerHTML=`
+<div class="card" style="padding: 20px; max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+        <img src="${p.image}" style="width: 100%; max-width: 400px; object-fit: contain; border-radius: 8px;">
+        <div style="flex: 1; min-width: 300px;">
+            <h2 style="color: #0f172a; margin-top: 0;">${p.name}</h2>
+            <p><strong>Mã sản phẩm:</strong> #${p.id}</p>
+            <p><strong>Cấp độ (Grade):</strong> <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">${p.category}</span></p>
+            <p class="price" style="font-size: 2em; margin: 15px 0;">${p.price.toLocaleString()} VND</p>
+            <p style="line-height: 1.6;"><strong>Mô tả:</strong><br>${p.desc}</p>
+            
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button onclick="addToCart(${p.id})" style="background: #f59e0b; color: white; padding: 10px 20px;">🛒 Thêm vào giỏ</button>
+                <button onclick="buyNow(${p.id})" style="background: #ef4444; color: white; padding: 10px 20px;">🔥 Mua ngay</button>
+                <button onclick="location.hash=''" style="background: #64748b; padding: 10px 20px;">⬅ Quay lại</button>
+            </div>
+        </div>
+    </div>
+</div>`;
+}
+
+window.onhashchange=()=>{
+document.getElementById('detail').innerHTML='';
+render();
+};
+
+function showLogin(){
+const pass=prompt('Nhập mật khẩu admin:');
+if(pass==='123456'){
+document.getElementById('admin-panel').classList.remove('hidden');
+renderAdmin();
+}else alert('Sai mật khẩu');
+}
+
+function saveProduct(){
+const idx=document.getElementById('editIndex').value;
+const newP={
+id: idx===''? Date.now(): products[idx].id,
+name:document.getElementById('name').value,
+category:document.getElementById('cat').value,
+price:parseInt(document.getElementById('price').value),
+image:document.getElementById('image').value,
+desc:document.getElementById('desc').value
+};
+if(idx==='') products.push(newP);
+else products[idx]=newP;
+localStorage.setItem('products',JSON.stringify(products));
+render();renderAdmin();
+}
+
+function renderAdmin(){
+let html='';
+products.forEach((p,i)=>{
+html+=`${p.name} <button onclick="edit(${i})">Sửa</button> <button onclick="del(${i})">Xóa</button><br>`;
+});
+document.getElementById('admin-list').innerHTML=html;
+}
+
+function edit(i){
+const p=products[i];
+document.getElementById('editIndex').value=i;
+document.getElementById('name').value=p.name;
+document.getElementById('cat').value=p.category;
+document.getElementById('price').value=p.price;
+document.getElementById('image').value=p.image;
+document.getElementById('desc').value=p.desc;
+}
+
+function del(i){
+if(confirm('Xóa?')){
+products.splice(i,1);
+localStorage.setItem('products',JSON.stringify(products));
+render();renderAdmin();
+}
+}
+
+function addToCart(id){
+    // Bạn có thể phát triển thêm logic lưu vào localStorage ở đây
+    alert('Đã thêm sản phẩm ' + products.find(p=>p.id===id).name + ' vào giỏ hàng!');
+}
+
+function buyNow(id){
+    alert('Chức năng thanh toán đang được cập nhật!');
+}
+
+render();
+</script>
+
+</body>
+</html>
