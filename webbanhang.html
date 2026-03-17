@@ -5,38 +5,151 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gundam Store - Frontend Only</title>
 <style>
-body{margin:0;font-family:Segoe UI;background:#f1f5f9}
-header{background:#0f172a;color:white;padding:15px 40px;display:flex;justify-content:space-between;align-items:center}
-header h2{margin:0}
-nav button{margin-left:10px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer}
-.container{max-width:1200px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-.card{background:white;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.1);overflow:hidden}
-.card img{width:100%;height:220px;object-fit:cover}
-.card-content{padding:15px}
-.price{color:#2563eb;font-weight:bold}
-button{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
-button:hover{opacity:.85}
-input,select{padding:6px;margin-right:10px}
+/* Cấu hình màu sắc theo style GundamChat */
+:root { --primary: #e3001b; --dark: #333; --light: #f4f4f4; --white: #fff; }
+body{margin:0;font-family:'Segoe UI', sans-serif;background:var(--light); color: var(--dark);}
+
+/* Header Trắng */
+header { background: var(--white); padding: 15px 0; border-bottom: 1px solid #eee; }
+.header-inner { max-width: 1200px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+.logo { font-size: 28px; font-weight: bold; color: var(--primary); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Thanh tìm kiếm ở giữa */
+.search-box { flex: 1; max-width: 500px; margin: 0 20px; display: flex; }
+.search-box input { width: 100%; padding: 10px; border: 2px solid var(--primary); border-right: none; border-radius: 4px 0 0 4px; outline: none; }
+.search-box button { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 0 4px 4px 0; cursor: pointer; font-weight: bold; }
+
+/* Menu Admin/Cart bên phải */
+.header-actions button { background: white; color: var(--dark); border: 1px solid #ddd; margin-left: 10px; font-weight: 500; }
+.header-actions button:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Menu Đỏ nằm ngang (Navigation) */
+.main-nav { background: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.nav-container { max-width: 1200px; margin: auto; display: flex; padding: 0 20px; overflow-x: auto; }
+.nav-item { color: white; padding: 15px 20px; cursor: pointer; font-weight: bold; font-size: 15px; white-space: nowrap; transition: 0.3s; }
+.nav-item:hover, .nav-item.active { background: rgba(0,0,0,0.1); }
+
+/* Container chính */
+.container{max-width:1200px;margin:20px auto;padding:0 20px}
+
+/* Grid sản phẩm */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.card{background:var(--white); border: 1px solid #eee; border-radius: 8px; overflow:hidden; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: #ffdce0; }
+
+.card img{width:100%;height:230px;object-fit:cover; border-bottom: 1px solid #f0f0f0;}
+.card-content{padding:15px; text-align: center;}
+.card h3 { font-size: 16px; margin: 0 0 10px; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.card h3 a { color: var(--dark); text-decoration: none; transition: 0.2s; }
+.card:hover h3 a { color: var(--primary); }
+
+.price{color:var(--primary);font-weight:bold; font-size: 18px; margin-bottom: 10px; display: block;}
+.card-actions button { width: 100%; margin-top: 5px; background: white; border: 1px solid var(--primary); color: var(--primary); padding: 8px; border-radius: 4px; font-weight: bold; transition: 0.2s; }
+.card-actions button:hover { background: var(--primary); color: white; }
+
+/* Các thành phần khác */
 .hidden{display:none}
-.pagination button{margin:5px}
+.pagination { margin-top: 30px; text-align: center; }
+.pagination button{margin:5px; padding: 8px 15px; background: white; border: 1px solid #ddd; cursor: pointer; }
+.pagination button:hover { border-color: var(--primary); color: var(--primary); }
+
 .admin{background:white;padding:20px;border-radius:10px;margin-top:20px}
+input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; }
+
+/* Ẩn input category cũ để giữ logic JS */
+#category { display: none; }
+
+/* Footer */
+footer {
+    background: var(--dark);
+    color: #a0aec0; /* A lighter gray */
+    margin-top: 40px;
+}
+
+.footer-content {
+    padding: 40px 20px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-col h4 {
+    color: var(--white);
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.footer-col p, .footer-col ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.footer-col p { margin-bottom: 10px; }
+.footer-col ul li { margin-bottom: 10px; }
+
+.footer-col a {
+    color: #a0aec0;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-col a:hover {
+    color: var(--primary);
+}
+
+.footer-bottom {
+    background: #2d3748; /* A slightly lighter dark */
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.footer-bottom p { margin: 0; }
 </style>
 </head>
 <body>
 
 <header>
-<h2><a href="#" style="color: white; text-decoration: none;">Gundam Store</a></h2>
-<nav>
-<button onclick="showLogin()">Admin</button>
-</nav>
+    <div class="header-inner">
+        <a href="#" class="logo">Gundam Store</a>
+        
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Tìm kiếm mô hình..." oninput="render()">
+            <button>🔍</button>
+        </div>
+
+        <div class="header-actions">
+            <button onclick="location.hash='#cart'">🛒 Giỏ Hàng</button>
+            <button onclick="showLogin()">⚙️ Admin</button>
+        </div>
+    </div>
 </header>
+
+<!-- Menu Điều Hướng Màu Đỏ -->
+<div class="main-nav">
+    <div class="nav-container">
+        <div class="nav-item active" onclick="selectCategory('all', this)">TRANG CHỦ</div>
+        <div class="nav-item" onclick="selectCategory('HG', this)">GUNDAM HG</div>
+        <div class="nav-item" onclick="selectCategory('RG', this)">GUNDAM RG</div>
+        <div class="nav-item" onclick="selectCategory('MG', this)">GUNDAM MG</div>
+        <div class="nav-item" onclick="selectCategory('PG', this)">GUNDAM PG</div>
+    </div>
+</div>
 
 <div class="container">
 
+<!-- Ẩn input category cũ nhưng giữ ID để logic JS render() vẫn hoạt động -->
 <div>
-<input type="text" id="search" placeholder="Tìm kiếm..." oninput="render()">
-<select id="category" onchange="render()">
+<select id="category" onchange="render()" style="display:none">
 <option value="all">Tất cả</option>
 <option value="HG">HG</option>
 <option value="MG">MG</option>
@@ -67,6 +180,35 @@ input,select{padding:6px;margin-right:10px}
 
 </div>
 
+<footer>
+    <div class="footer-content">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>GUNDAM STORE</h4>
+                <p>Chuyên cung cấp các mẫu mô hình Gundam (Gunpla) chính hãng Bandai Nhật Bản với giá tốt nhất và dịch vụ chuyên nghiệp.</p>
+            </div>
+            <div class="footer-col">
+                <h4>CHÍNH SÁCH CỬA HÀNG</h4>
+                <ul>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Chính sách đổi trả & hoàn tiền</a></li>
+                    <li><a href="#">Chính sách giao hàng</a></li>
+                    <li><a href="#">Điều khoản dịch vụ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>THÔNG TIN LIÊN HỆ</h4>
+                <p><strong>Địa chỉ:</strong> 171 Phan Đăng Lưu, Kiến An, Hải Phòng</p>
+                <p><strong>Email:</strong> gundamshop@gmail.com</p>
+                <p><strong>Hotline:</strong> 0xxx.xxx.xxx</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Gundam Store | Thiết kế bởi Gemini Code Assist</p>
+    </div>
+</footer>
+
 <script>
 let products = JSON.parse(localStorage.getItem('products')) || [
 {id:1,name:'RX-78-2 Gundam',category:'HG',price:350000,image:'https://i.imgur.com/Z6XK6FQ.jpg',desc:'Mobile Suit Gundam'},
@@ -95,6 +237,7 @@ const perPage=8;
 
 function render(){
 if(location.hash.startsWith('#product-')) return showDetail();
+if(location.hash==='#cart') return showCart();
 
 const search=document.getElementById('search').value.toLowerCase();
 const category=document.getElementById('category').value;
@@ -114,8 +257,10 @@ container.innerHTML+=`
 <img src="${p.image}">
 <div class="card-content">
 <h3><a href="#product-${p.id}">${p.name}</a></h3>
-<p>${p.category}</p>
-<p class="price">${p.price.toLocaleString()} VND</p>
+<span class="price">${p.price.toLocaleString()} ₫</span>
+<div class="card-actions">
+<button onclick="addToCart(${p.id})">THÊM VÀO GIỎ</button>
+</div>
 </div></div>`;
 });
 
@@ -132,25 +277,53 @@ const p=products.find(x=>x.id===id);
 if(!p) return;
 document.getElementById('product-list').innerHTML='';
 document.getElementById('pagination').innerHTML='';
-document.getElementById('detail').innerHTML=`
-<div class="card" style="padding: 20px; max-width: 900px; margin: 0 auto;">
-    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-        <img src="${p.image}" style="width: 100%; max-width: 400px; object-fit: contain; border-radius: 8px;">
-        <div style="flex: 1; min-width: 300px;">
-            <h2 style="color: #0f172a; margin-top: 0;">${p.name}</h2>
-            <p><strong>Mã sản phẩm:</strong> #${p.id}</p>
-            <p><strong>Cấp độ (Grade):</strong> <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">${p.category}</span></p>
-            <p class="price" style="font-size: 2em; margin: 15px 0;">${p.price.toLocaleString()} VND</p>
-            <p style="line-height: 1.6;"><strong>Mô tả:</strong><br>${p.desc}</p>
-            
-            <div style="margin-top: 30px; display: flex; gap: 10px;">
-                <button onclick="addToCart(${p.id})" style="background: #f59e0b; color: white; padding: 10px 20px;">🛒 Thêm vào giỏ</button>
-                <button onclick="buyNow(${p.id})" style="background: #ef4444; color: white; padding: 10px 20px;">🔥 Mua ngay</button>
-                <button onclick="location.hash=''" style="background: #64748b; padding: 10px 20px;">⬅ Quay lại</button>
+
+let detailHtml = `
+    <div class="card" style="padding: 20px; max-width: 900px; margin: 0 auto; border: none; box-shadow: none;">
+        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <img src="${p.image}" style="width: 100%; max-width: 400px; object-fit: contain; border-radius: 8px; border: 1px solid #eee;">
+            <div style="flex: 1; min-width: 300px;">
+                <h2 style="color: #0f172a; margin-top: 0;">${p.name}</h2>
+                <p><strong>Mã sản phẩm:</strong> #${p.id}</p>
+                <p><strong>Cấp độ (Grade):</strong> <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">${p.category}</span></p>
+                <p class="price" style="font-size: 2em; margin: 15px 0;">${p.price.toLocaleString()} VND</p>
+                <p style="line-height: 1.6;"><strong>Mô tả:</strong><br>${p.desc}</p>
+                
+                <div style="margin-top: 30px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="addToCart(${p.id})" style="background: #f59e0b; color: white; padding: 10px 20px; border-radius: 4px;">🛒 Thêm vào giỏ</button>
+                    <button onclick="buyNow(${p.id})" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 4px;">🔥 Mua ngay</button>
+                    <button onclick="location.hash=''" style="background: #64748b; padding: 10px 20px; border-radius: 4px;">⬅ Quay lại</button>
+                </div>
             </div>
         </div>
-    </div>
-</div>`;
+    </div>`;
+
+// Logic sản phẩm đề xuất
+const suggested = products
+    .filter(prod => prod.category === p.category && prod.id !== p.id)
+    .slice(0, 4); // Lấy 4 sản phẩm liên quan
+
+if (suggested.length > 0) {
+    detailHtml += `<div style="max-width: 900px; margin: 40px auto 0;">
+                        <h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; text-transform: uppercase;">Sản phẩm liên quan</h3>
+                        <div class="grid">`;
+    suggested.forEach(s => {
+        detailHtml += `
+            <div class="card">
+                <a href="#product-${s.id}"><img src="${s.image}"></a>
+                <div class="card-content">
+                    <h3><a href="#product-${s.id}">${s.name}</a></h3>
+                    <span class="price">${s.price.toLocaleString()} ₫</span>
+                    <div class="card-actions">
+                        <button onclick="addToCart(${s.id})">THÊM VÀO GIỎ</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+    detailHtml += `</div></div>`;
+}
+
+document.getElementById('detail').innerHTML = detailHtml;
 }
 
 window.onhashchange=()=>{
@@ -208,16 +381,117 @@ render();renderAdmin();
 }
 }
 
+function showCart(){
+document.getElementById('product-list').innerHTML='';
+document.getElementById('pagination').innerHTML='';
+const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+if(cart.length===0){
+    document.getElementById('detail').innerHTML=`<div class="card" style="padding:40px;text-align:center"><h2>Giỏ hàng trống</h2><p>Bạn chưa chọn sản phẩm nào.</p><button onclick="location.hash=''" style="margin-top:20px">Quay lại mua sắm</button></div>`;
+    return;
+}
+
+let total=0;
+let rows='';
+cart.forEach((p,i)=>{
+    let sum=p.price*p.quantity;
+    total+=sum;
+    rows+=`<tr style="border-bottom:1px solid #eee">
+    <td style="padding:10px">${p.name}</td>
+    <td style="padding:10px">${p.price.toLocaleString()}</td>
+    <td style="padding:10px">${p.quantity}</td>
+    <td style="padding:10px;font-weight:bold">${sum.toLocaleString()}</td>
+    <td style="padding:10px"><button style="background:#ef4444" onclick="removeFromCart(${i})">X</button></td></tr>`;
+});
+
+let html=`<div class="card" style="padding:20px;max-width:1000px;margin:auto">
+<h2 style="border-bottom:2px solid var(--primary);padding-bottom:10px;margin-bottom:20px">Thanh Toán Đơn Hàng</h2>
+
+<!-- 1. Danh sách sản phẩm -->
+<div style="margin-bottom:30px">
+    <table style="width:100%;text-align:left;border-collapse:collapse">
+        <tr style="background:#f9f9f9"><th style="padding:10px">Sản phẩm</th><th style="padding:10px">Giá</th><th style="padding:10px">SL</th><th style="padding:10px">Thành tiền</th><th style="padding:10px"></th></tr>
+        ${rows}
+    </table>
+    <div style="text-align:right;margin-top:15px;font-size:18px">
+        Tổng tiền hàng: <span style="color:var(--primary);font-weight:bold;font-size:24px">${total.toLocaleString()} ₫</span>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <!-- 2. Thông tin mua hàng -->
+    <div>
+        <h3>Thông tin người mua</h3>
+        <input id="cName" placeholder="Họ và tên" style="margin-bottom:10px">
+        <input id="cPhone" placeholder="Số điện thoại" style="margin-bottom:10px">
+        <input id="cAddr" placeholder="Địa chỉ nhận hàng" style="margin-bottom:10px">
+        <textarea id="cNote" placeholder="Ghi chú (nếu có)" style="height:80px"></textarea>
+    </div>
+
+    <!-- 3. Vận chuyển & Thanh toán -->
+    <div>
+        <h3>Vận chuyển & Thanh toán</h3>
+        <div style="margin-bottom:20px;padding:15px;border:1px solid #eee;border-radius:4px">
+            <strong>Hình thức vận chuyển:</strong><br>
+            <label style="display:block;margin-top:10px"><input type="radio" name="ship" checked> Tiêu chuẩn (30.000₫)</label>
+            <label style="display:block;margin-top:5px"><input type="radio" name="ship"> Hỏa tốc (50.000₫)</label>
+        </div>
+        <div style="margin-bottom:20px;padding:15px;border:1px solid #eee;border-radius:4px">
+            <strong>Hình thức thanh toán:</strong><br>
+            <label style="display:block;margin-top:10px"><input type="radio" name="pay" checked> Thanh toán khi nhận hàng (COD)</label>
+            <label style="display:block;margin-top:5px"><input type="radio" name="pay"> Chuyển khoản ngân hàng</label>
+        </div>
+        <button onclick="processOrder()" style="width:100%;padding:15px;font-size:18px;background:var(--primary)">ĐẶT HÀNG NGAY</button>
+    </div>
+</div>
+</div>`;
+document.getElementById('detail').innerHTML=html;
+}
+
+function removeFromCart(i){
+    const cart=JSON.parse(localStorage.getItem('cart'));
+    cart.splice(i,1);
+    localStorage.setItem('cart',JSON.stringify(cart));
+    showCart();
+}
+
 function addToCart(id){
-    // Bạn có thể phát triển thêm logic lưu vào localStorage ở đây
-    alert('Đã thêm sản phẩm ' + products.find(p=>p.id===id).name + ' vào giỏ hàng!');
+    const p=products.find(x=>x.id===id);
+    const cart=JSON.parse(localStorage.getItem('cart'))||[];
+    const item=cart.find(x=>x.id===id);
+    if(item) item.quantity++; else cart.push({...p,quantity:1});
+    localStorage.setItem('cart',JSON.stringify(cart));
+    alert('Đã thêm '+p.name+' vào giỏ!');
+}
+
+function processOrder(){
+    if(!document.getElementById('cName').value || !document.getElementById('cPhone').value || !document.getElementById('cAddr').value){
+        return alert('Vui lòng điền đủ thông tin nhận hàng!');
+    }
+    alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+    localStorage.removeItem('cart');
+    location.hash='';
+    render();
 }
 
 function buyNow(id){
-    alert('Chức năng thanh toán đang được cập nhật!');
+    addToCart(id);
+    location.hash='#cart';
 }
 
 render();
+
+// Hàm mới để xử lý click trên Menu Đỏ
+function selectCategory(cat, element) {
+    // Cập nhật giá trị cho thẻ select ẩn
+    document.getElementById('category').value = cat;
+    
+    // Cập nhật giao diện menu (active)
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if(element) element.classList.add('active');
+
+    render(); // Gọi lại hàm hiển thị
+}
 </script>
 
 </body>
